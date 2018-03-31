@@ -19,7 +19,8 @@ from __future__ import print_function
 import argparse
 import tensorflow as tf
 
-import iris_data
+#import flights_data
+import flights_data
 
 
 parser = argparse.ArgumentParser()
@@ -31,12 +32,29 @@ def main(argv):
     args = parser.parse_args(argv[1:])
 
     # Fetch the data
-    (train_x, train_y), (test_x, test_y) = iris_data.load_data()
+    (train_x, train_y), (test_x, test_y) = flights_data.load_data()
 
     # Feature columns describe how to use the input.
     my_feature_columns = []
-    for key in train_x.keys():
-        my_feature_columns.append(tf.feature_column.numeric_column(key=key))
+    #for key in train_x.keys():
+    #    my_feature_columns.append(tf.feature_column.numeric_column(key=key))
+
+    my_feature_columns = [
+        tf.feature_column.numeric_column(key="Month"),
+        tf.feature_column.numeric_column(key="DayOfMonth"),
+        tf.feature_column.numeric_column(key="DayOfWeek"),
+        tf.feature_column.numeric_column(key="CRSDepTime"),
+        tf.feature_column.numeric_column(key="CRSArrTime"),
+        tf.feature_column.categorical_column_with_hash_bucket(
+        	key="UniqueCarrier", hash_bucket_size=1000),
+        tf.feature_column.numeric_column(key="FlightNum"),
+        tf.feature_column.categorical_column_with_hash_bucket(
+        	key="TailNum", hash_bucket_size=10000),
+        tf.feature_column.numeric_column(key="CRSElapsedTime"),
+        tf.feature_column.categorical_column_with_hash_bucket(
+        	key="Origin", hash_bucket_size=10000),
+        tf.feature_column.categorical_column_with_hash_bucket(
+        	key="Dest", hash_bucket_size=10000)]
 
     # Build 2 hidden layer DNN with 10, 10 units respectively.
     classifier = tf.estimator.DNNClassifier(
@@ -48,39 +66,39 @@ def main(argv):
 
     # Train the Model.
     classifier.train(
-        input_fn=lambda:iris_data.train_input_fn(train_x, train_y,
+        input_fn=lambda:flights_data.train_input_fn(train_x, train_y,
                                                  args.batch_size),
         steps=args.train_steps)
 
     # Evaluate the model.
     eval_result = classifier.evaluate(
-        input_fn=lambda:iris_data.eval_input_fn(test_x, test_y,
+        input_fn=lambda:flights_data.eval_input_fn(test_x, test_y,
                                                 args.batch_size))
 
     print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 
     # Generate predictions from the model
-    expected = ['Setosa', 'Versicolor', 'Virginica']
-    predict_x = {
-        'SepalLength': [5.1, 5.9, 6.9],
-        'SepalWidth': [3.3, 3.0, 3.1],
-        'PetalLength': [1.7, 4.2, 5.4],
-        'PetalWidth': [0.5, 1.5, 2.1],
-    }
+    #expected = ['Setosa', 'Versicolor', 'Virginica']
+    #predict_x = {
+    #    'SepalLength': [5.1, 5.9, 6.9],
+    #    'SepalWidth': [3.3, 3.0, 3.1],
+    #    'PetalLength': [1.7, 4.2, 5.4],
+    #    'PetalWidth': [0.5, 1.5, 2.1],
+    #}
 
-    predictions = classifier.predict(
-        input_fn=lambda:iris_data.eval_input_fn(predict_x,
-                                                labels=None,
-                                                batch_size=args.batch_size))
+    #predictions = classifier.predict(
+    #    input_fn=lambda:flights_data.eval_input_fn(predict_x,
+    #                                            labels=None,
+    #                                            batch_size=args.batch_size))
 
-    for pred_dict, expec in zip(predictions, expected):
-        template = ('\nPrediction is "{}" ({:.1f}%), expected "{}"')
+    #for pred_dict, expec in zip(predictions, expected):
+    #    template = ('\nPrediction is "{}" ({:.1f}%), expected "{}"')
 
-        class_id = pred_dict['class_ids'][0]
-        probability = pred_dict['probabilities'][class_id]
+    #    class_id = pred_dict['class_ids'][0]
+    #    probability = pred_dict['probabilities'][class_id]
 
-        print(template.format(iris_data.SPECIES[class_id],
-                              100 * probability, expec))
+    #    print(template.format(flights_data.SPECIES[class_id],
+    #                          100 * probability, expec))
 
 
 if __name__ == '__main__':

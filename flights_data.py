@@ -1,16 +1,16 @@
 import pandas as pd
 import tensorflow as tf
 
-TRAIN_PATH = "/scratch/vicente/train_clean.csv"
-TEST_PATH  = "/scratch/vicente/test_clean.csv"
+TRAIN_PATH = "/home/vicente/train.csv"
+TEST_PATH  = "/home/vicente/test.csv"
 
 
 CSV_COLUMN_NAMES = ['Month','DayofMonth','DayOfWeek','CRSDepTime',
                     'CRSArrTime','UniqueCarrier','FlightNum','TailNum',
 										'CRSElapsedTime','ArrDelay','Origin','Dest']
-SPECIES = ['DELAYED', 'NOT_DELAYED']
+SPECIES = ['DELAY', 'NODELAY']
 
-def load_data(y_name='delayed'):
+def load_data(y_name='ArrDelay'):
     """Returns the iris dataset as (train_x, train_y), (test_x, test_y)."""
 
     train = pd.read_csv(TRAIN_PATH, names=CSV_COLUMN_NAMES, header=0)
@@ -69,7 +69,7 @@ def _parse_line(line):
     features = dict(zip(CSV_COLUMN_NAMES, fields))
 
     # Separate the label from the features
-    label = features.pop('delayed')
+    label = features.pop('ArrDelay')
 
     return features, label
 
