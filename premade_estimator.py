@@ -35,45 +35,55 @@ def main(argv):
     (train_x, train_y), (test_x, test_y) = flights_data.load_data()
 
     # Feature columns describe how to use the input.
-    my_feature_columns = []
+    #my_feature_columns = []
     #for key in train_x.keys():
-    #    my_feature_columns.append(tf.feature_column.numeric_column(key=key))
-
+    #    my_feature_columns.append(tf.feature_column.numeric_column(key=key)
     my_feature_columns = [
         tf.feature_column.numeric_column(key="Month"),
-        tf.feature_column.numeric_column(key="DayOfMonth"),
+        tf.feature_column.numeric_column(key="DayofMonth"),
         tf.feature_column.numeric_column(key="DayOfWeek"),
         tf.feature_column.numeric_column(key="CRSDepTime"),
         tf.feature_column.numeric_column(key="CRSArrTime"),
         tf.feature_column.categorical_column_with_hash_bucket(
-        	key="UniqueCarrier", hash_bucket_size=1000),
+         	key="UniqueCarrier", hash_bucket_size=100),
         tf.feature_column.numeric_column(key="FlightNum"),
-        tf.feature_column.categorical_column_with_hash_bucket(
-        	key="TailNum", hash_bucket_size=10000),
-        tf.feature_column.numeric_column(key="CRSElapsedTime"),
-        tf.feature_column.categorical_column_with_hash_bucket(
-        	key="Origin", hash_bucket_size=10000),
-        tf.feature_column.categorical_column_with_hash_bucket(
-        	key="Dest", hash_bucket_size=10000)]
+        #tf.feature_column.categorical_column_with_hash_bucket(
+        	#key="TailNum", hash_bucket_size=10000),
+        tf.feature_column.numeric_column(key="CRSElapsedTime")]
+        #tf.feature_column.categorical_column_with_hash_bucket(
+        	#key="Origin", hash_bucket_size=10000)]
+        #tf.feature_column.categorical_column_with_hash_bucket(
+        #	key="Dest", hash_bucket_size=10000, dtype=tf.string)]
 
     # Build 2 hidden layer DNN with 10, 10 units respectively.
-    classifier = tf.estimator.DNNClassifier(
-        feature_columns=my_feature_columns,
+    #classifier = tf.estimator.DNNClassifier(
+    #    feature_columns=my_feature_columns,
+    #    # Two hidden layers of 10 nodes each.
+    #    hidden_units=[10, 10],
+    #    # The model must choose between 3 classes.
+    #    n_classes=3)
+
+#
+    train_fn = tf.estimator.inputs.pandas_input_fn(x=train_x, y=train_y, shuffle=True)
+    test_fn = tf.estimator.inputs.pandas_input_fn(x=train_x, y=train_y, shuffle=True)
+    classifier = tf.estimator.LinearClassifier(
+        feature_columns=my_feature_columns)
         # Two hidden layers of 10 nodes each.
-        hidden_units=[10, 10],
+        #hidden_units=[10, 10],
         # The model must choose between 3 classes.
-        n_classes=3)
+        #n_classes=3)
 
     # Train the Model.
     classifier.train(
-        input_fn=lambda:flights_data.train_input_fn(train_x, train_y,
-                                                 args.batch_size),
+        #input_fn=lambda:flights_data.train_input_fn(p_train_x, p_train_y,
+                                                 #args.batch_size),
+        input_fn=train_fn,
         steps=args.train_steps)
 
     # Evaluate the model.
-    eval_result = classifier.evaluate(
-        input_fn=lambda:flights_data.eval_input_fn(test_x, test_y,
-                                                args.batch_size))
+    eval_result = classifier.evaluate(input_fn=test_fn)
+        #input_fn=lambda:flights_data.eval_input_fn(test_x, test_y,
+                                                #args.batch_size))
 
     print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 

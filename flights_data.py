@@ -1,8 +1,8 @@
 import pandas as pd
 import tensorflow as tf
 
-TRAIN_PATH = "/home/vicente/train.csv"
-TEST_PATH  = "/home/vicente/test.csv"
+TRAIN_PATH = "/home/vicente/train_clean.csv"
+TEST_PATH  = "/home/vicente/test_clean.csv"
 
 
 CSV_COLUMN_NAMES = ['Month','DayofMonth','DayOfWeek','CRSDepTime',
@@ -13,11 +13,16 @@ SPECIES = ['DELAY', 'NODELAY']
 def load_data(y_name='ArrDelay'):
     """Returns the iris dataset as (train_x, train_y), (test_x, test_y)."""
 
-    train = pd.read_csv(TRAIN_PATH, names=CSV_COLUMN_NAMES, header=0)
+    train = pd.read_csv(TRAIN_PATH, header=0)
     train_x, train_y = train, train.pop(y_name)
 
-    test = pd.read_csv(TEST_PATH, names=CSV_COLUMN_NAMES, header=0)
+    test = pd.read_csv(TEST_PATH, header=0)
     test_x, test_y = test, test.pop(y_name)
+
+    train.pop('Dest')
+    train.pop('Origin')
+    train.pop('TailNum')
+    #train.pop('UniqueCarrier')
 
     return (train_x, train_y), (test_x, test_y)
 
@@ -59,7 +64,7 @@ def eval_input_fn(features, labels, batch_size):
 
 # `tf.parse_csv` sets the types of the outputs to match the examples given in
 #     the `record_defaults` argument.
-CSV_TYPES = [[0, 0, 0, 0, 0, "", 0, "", 0, 0, "", ""]]
+CSV_TYPES = [[0, 0, 0, 0, 0, "", 0, "", 0, "", "", ""]]
 
 def _parse_line(line):
     # Decode the line into its fields
