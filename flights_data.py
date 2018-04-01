@@ -19,10 +19,7 @@ def load_data(y_name='ArrDelay'):
     test = pd.read_csv(TEST_PATH, header=0)
     test_x, test_y = test, test.pop(y_name)
 
-    train.pop('Dest')
-    train.pop('Origin')
     train.pop('TailNum')
-    #train.pop('UniqueCarrier')
 
     return (train_x, train_y), (test_x, test_y)
 
