@@ -44,18 +44,18 @@ def main(argv):
 
         tf.feature_column.embedding_column(
           tf.feature_column.categorical_column_with_hash_bucket(
-            key="UniqueCarrier", hash_bucket_size=262),15),
+            key="UniqueCarrier", hash_bucket_size=262), 4),
 
         tf.feature_column.numeric_column(key="FlightNum"),
         tf.feature_column.numeric_column(key="CRSElapsedTime"),
 
         tf.feature_column.embedding_column(
          tf.feature_column.categorical_column_with_hash_bucket(
-           key="Origin", hash_bucket_size=284),16),
+           key="Origin", hash_bucket_size=284), 5),
 
         tf.feature_column.embedding_column(
          tf.feature_column.categorical_column_with_hash_bucket(
-           key="Dest", hash_bucket_size=284, dtype=tf.string),16)
+           key="Dest", hash_bucket_size=284, dtype=tf.string), 5)
      ]
 
     train_fn = tf.estimator.inputs.pandas_input_fn(x=train_x, y=train_y, shuffle=True)
@@ -63,7 +63,7 @@ def main(argv):
 
     classifier = tf.estimator.DNNClassifier(
         feature_columns=my_feature_columns,
-        hidden_units=[20, 20],
+        hidden_units=[10, 10],
         n_classes=2)
 
     # Train the Model.
