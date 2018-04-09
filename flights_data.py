@@ -1,14 +1,14 @@
 import pandas as pd
 import tensorflow as tf
 
-TRAIN_PATH = "/home/vicente/train_clean.csv"
-TEST_PATH  = "/home/vicente/test_clean.csv"
+TRAIN_PATH = "/home/students/cs20175324/ml-project/train.csv"
+TEST_PATH = "/home/students/cs20175324/ml-project/test.csv"
 
-
-CSV_COLUMN_NAMES = ['Month','DayofMonth','DayOfWeek','CRSDepTime',
-                    'CRSArrTime','UniqueCarrier','FlightNum','TailNum',
-										'CRSElapsedTime','ArrDelay','Origin','Dest']
+CSV_COLUMN_NAMES = ['Month', 'DayofMonth', 'DayOfWeek', 'CRSDepTime',
+                    'CRSArrTime', 'UniqueCarrier', 'FlightNum', 'TailNum',
+                    'CRSElapsedTime', 'ArrDelay', 'Origin', 'Dest']
 SPECIES = ['DELAY', 'NODELAY']
+
 
 def load_data(y_name='ArrDelay'):
     """Returns the iris dataset as (train_x, train_y), (test_x, test_y)."""
@@ -19,7 +19,6 @@ def load_data(y_name='ArrDelay'):
     test = pd.read_csv(TEST_PATH, header=0)
     test_x, test_y = test, test.pop(y_name)
 
-    train.pop('TailNum')
 
     return (train_x, train_y), (test_x, test_y)
 
